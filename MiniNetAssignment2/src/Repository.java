@@ -1,3 +1,9 @@
+/**
+* This is NotBeClassmatesException class 
+*
+* @version 1.00 13 May 2018
+* @author Yining Chen & Tianyu Tan
+*/
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -5,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Repository {
+	//connecting string 
 	private String Hosting = "jdbc:mysql://localhost:3306/MiniNet" 
             + "?verifyServerCertificate=false"
             + "&useSSL=false"
@@ -18,6 +25,7 @@ public class Repository {
 		try
 		{
 			//System.setProperty("jdbc.drivers", "sun.jdbc.odbc.JdbcOdbcDriver");
+			//create a instance connection
 			connection = DriverManager.getConnection(Hosting,Username,Password);  
 		}
 		catch(Exception e)
@@ -26,6 +34,7 @@ public class Repository {
 		}
 	}
 	
+	//ExcuteQuery with return value
 	public ResultSet ExecuteQuery(String query) 
 	{
 		try
@@ -40,6 +49,7 @@ public class Repository {
 		}	
 	}
 	
+	//ExcuteQuery without return value
 	public void Execute(String query) 
 	{
 		String person = "CREATE TABLE IF NOT EXISTS `Person` (\r\n" + 
@@ -59,6 +69,7 @@ public class Repository {
 				");";
 		try
 		{
+			//if table is not EXISTS, create table
 			Statement stmt= connection.createStatement();  
 			stmt.execute(person); 
 			stmt.execute(relationship); 
@@ -70,6 +81,7 @@ public class Repository {
 		}	
 	}
 	
+	//get person details by Id
 	public Person GetPersonById(String id) 
 	{
 		String getPersonById = "Select * From Person Where Id = '" + id + "';";
@@ -92,6 +104,7 @@ public class Repository {
 		return p;
 	}
 	
+	//get person details by name
 	public Person GetPersonByName(String name) 
 	{
 		String getPersonById = "Select * From Person Where Name = '" + name + "';";
@@ -114,6 +127,8 @@ public class Repository {
 		return p;
 	}
 	
+	
+	//Add a person to database
 	public void InserPerson(Person person) 
 	{
 		person.setId(java.util.UUID.randomUUID().toString());
@@ -126,6 +141,7 @@ public class Repository {
 		Execute(insertPerson);
 	}
 	
+	//add a relationship to database
 	public void InserRelationship(Relationship relationship) 
 	{
 		relationship.setId(java.util.UUID.randomUUID().toString());
@@ -138,6 +154,7 @@ public class Repository {
 		Execute(insertRelationship);
 	}
 	
+	//get all the persons 
 	public ArrayList<Person> GetPersons()
 	{
 		ArrayList<Person> persons = new ArrayList<Person>();
@@ -162,6 +179,7 @@ public class Repository {
 		return persons;
 	}
 	
+	//get all the relationships
 	public ArrayList<Relationship> GetRelationships()
 	{
 		ArrayList<Relationship> relationships = new ArrayList<Relationship>();
@@ -186,6 +204,7 @@ public class Repository {
 		return relationships;
 	}
 	
+	//clear the records in person and relationship table
 	public void ClearDatabase()
 	{
 		String delete = "DELETE FROM Person\r\n" + 
@@ -196,6 +215,7 @@ public class Repository {
 		 Execute(delete);
 	}
 	
+	//add the test data
 	public void AddTestData()
 	{
 		ClearDatabase();
