@@ -39,7 +39,27 @@ public class Repository {
 	{
 		try
 		{
-			Statement stmt= connection.createStatement();   
+			String person = "CREATE TABLE IF NOT EXISTS `Person` (\r\n" + 
+					"  `Id` varchar(128) NOT NULL,\r\n" + 
+					"  `Name` varchar(128) NOT NULL,\r\n" + 
+					"	`Age` int(3) NOT NULL,\r\n" + 
+					"	`Status` varchar(128) NOT NULL,\r\n" + 
+					"	`Gender` varchar(128) NOT NULL,\r\n" + 
+					"	`State` varchar(128) NOT NULL,\r\n" + 
+					"  PRIMARY KEY (`Id`)\r\n" + 
+					");";
+			String relationship = "CREATE TABLE IF NOT EXISTS `Relationship` (\r\n" + 
+					"	`Id` varchar(128) NOT NULL PRIMARY KEY,\r\n" + 
+					"	`FirstPersonNameId` varchar(128) NOT NULL,\r\n" + 
+					"	`SecondPersonNameId` varchar(128) NOT NULL,\r\n" + 
+					"	`Relationship` varchar(128) NOT NULL,\r\n" + 
+					"	FOREIGN KEY (`FirstPersonNameId`) REFERENCES `Person`(`Id`),\r\n" + 
+					"	FOREIGN KEY (`SecondPersonNameId`) REFERENCES `Person`(`Id`)\r\n" + 
+					");";
+			
+			Statement stmt= connection.createStatement();  
+			stmt.execute(person); 
+			stmt.execute(relationship); 
 			return stmt.executeQuery(query);  
 		}
 		catch(Exception e)
@@ -57,6 +77,8 @@ public class Repository {
 				"  `Name` varchar(128) NOT NULL,\r\n" + 
 				"	`Age` int(3) NOT NULL,\r\n" + 
 				"	`Status` varchar(128) NOT NULL,\r\n" + 
+				"	`Gender` varchar(128) NOT NULL,\r\n" + 
+				"	`State` varchar(128) NOT NULL,\r\n" + 
 				"  PRIMARY KEY (`Id`)\r\n" + 
 				");";
 		String relationship = "CREATE TABLE IF NOT EXISTS `Relationship` (\r\n" + 
@@ -95,6 +117,8 @@ public class Repository {
 				p.setName(result.getString(2));
 				p.setAge(result.getInt(3));
 				p.setStatus(result.getString(4));
+				p.setGender(result.getString(5));
+				p.setState(result.getString(6));
 			}
 		}
 		catch(Exception e)
@@ -118,6 +142,8 @@ public class Repository {
 				p.setName(result.getString(2));
 				p.setAge(result.getInt(3));
 				p.setStatus(result.getString(4));
+				p.setGender(result.getString(5));
+				p.setState(result.getString(6));
 			}
 		}
 		catch(Exception e)
@@ -132,11 +158,13 @@ public class Repository {
 	public void InserPerson(Person person) 
 	{
 		person.setId(java.util.UUID.randomUUID().toString());
-		String insertPerson = "INSERT INTO person (Id, Name, Age, Status)\r\n" + 
+		String insertPerson = "INSERT INTO person (Id, Name, Age, Status, Gender, State)\r\n" + 
 				"VALUES ('" + person.getId() 
 				+ "', '" + person.getName()
 				+ "', '" + person.getAge()
 				+ "','" + person.getStatus()
+				+ "', '" + person.getGender()
+				+ "','" + person.getState()
 				+ "');";
 		Execute(insertPerson);
 	}
@@ -169,6 +197,8 @@ public class Repository {
 				p.setName(result.getString(2));
 				p.setAge(result.getInt(3));
 				p.setStatus(result.getString(4));
+				p.setGender(result.getString(5));
+				p.setState(result.getString(6));
 				persons.add(p);
 			}
 		}
@@ -177,6 +207,53 @@ public class Repository {
 			System.out.println(e.getMessage());
 		}
 		return persons;
+	}
+	
+	public String GetRelationship(String Name1,String Name2) 
+	{
+		Repository r = new Repository();
+		Person p1 = r.GetPersonByName(Name1);
+		Person p2 = r.GetPersonByName(Name2);
+		String result = "";
+		System.out.println(result + "1");
+		if(p1.getId() != null && p2.getId() != null) 
+		{
+			String P1Id = p1.getId();
+			String P2Id = p2.getId();
+			String getRelationship = "Select * From Relationship "
+					+ "Where FirstPersonNameId = '" + P1Id + "' and SecondPersonNameId = '" + P2Id + "';";
+			String getRelationship2 = "Select * From Relationship "
+					+ "Where FirstPersonNameId = '" + P2Id + "' and SecondPersonNameId = '" + P1Id + "';";
+			ResultSet result1 = ExecuteQuery(getRelationship);
+			ResultSet result2 = ExecuteQuery(getRelationship2);
+			try
+			{
+				while(result1.next())  
+				{
+					result  = result1.getString(4);
+				}
+				
+				while(result2.next())  
+				{
+					result  = result2.getString(4);
+				}
+				if(result.equals("")) 
+				{
+					result = "No relationship!";
+				}
+			}
+			catch(Exception e)
+			{
+				System.out.println(e.getMessage());
+				result = "No relationship!";
+			}
+		}
+		else
+		{
+			result = "Person no found!";
+		}
+		
+		return result;
 	}
 	
 	//get all the relationships
@@ -219,17 +296,17 @@ public class Repository {
 	public void AddTestData()
 	{
 		ClearDatabase();
-		Person p1 = new Person("Cart",21,"Studing in RMIT");
-		Person p2 = new Person("Terry",25,"Studing in RMIT");
-		Person p3 = new Person("Tonny",15,"Studing");
-		Person p4 = new Person("Lucy",14,"Studing in high shcool");
-		Person p5 = new Person("Mao",8,"Studing in primary shcool");
+		Person p1 = new Person("Cart",21,"Studing in RMIT","M","VIC");
+		Person p2 = new Person("Terry",25,"Studing in RMIT","M","VIC");
+		Person p3 = new Person("Tonny",15,"Studing","M","VIC");
+		Person p4 = new Person("Lucy",14,"Studing in high shcool","F","VIC");
+		Person p5 = new Person("Mao",8,"Studing in primary shcool","M","VIC");
 		InserPerson(p1);
 		InserPerson(p2);
 		InserPerson(p3);
 		InserPerson(p4);
 		InserPerson(p5);
-		InserRelationship(new Relationship(p1.getId(),p2.getId(),"Friend"));
+		InserRelationship(new Relationship(p1.getId(),p2.getId(),"Friends"));
 	}
 	
 }

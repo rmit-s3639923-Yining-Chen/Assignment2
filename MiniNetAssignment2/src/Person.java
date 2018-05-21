@@ -1,7 +1,7 @@
 /**
 * This is Person class 
 *
-* @version 1.00 15 March 2018
+* @version 1.00 21 May 2018
 * @author Yining Chen
 */
 public class Person {
@@ -9,14 +9,34 @@ public class Person {
 	private String Name;
 	private int Age;
 	private String Status;
+	private String Gender;
+	private String State;
 	
-	public Person(String name, int age, String status) {
+	public Person(String name, int age, String status, String gender, String state) {
 		Name = name;
 		Age = age;
 		Status = status;
+		Gender = gender;
+		State = state;
 	}
 	
 	public Person() {}
+
+	public String getGender() {
+		return Gender;
+	}
+
+	public void setGender(String gender) {
+		Gender = gender;
+	}
+
+	public String getState() {
+		return State;
+	}
+
+	public void setState(String state) {
+		State = state;
+	}
 
 	public String getName() {
 		return Name;
@@ -52,7 +72,7 @@ public class Person {
 	
 	public String Print() 
 	{
-		return Name + ", " + Age + ", " + Status;
+		return Name + ", " + Status + ", " + Gender + ", " + Age + ", " + State;
 	}
 	
 }
